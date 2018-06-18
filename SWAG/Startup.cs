@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-namespace SWAG
+﻿namespace SWAG
 {
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using SWAG.Model;
+    using SWAG.OperationFactory;
+    using SWAG.SaveService;
+
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,6 +22,11 @@ namespace SWAG
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.Configure<StorageOptions>(Configuration.GetSection("ConnectionStrings"));
+
+            services.AddTransient<ISaveProvider, FileProvider>();
+            services.AddTransient<IOperationFactory, OperationFactory.OperationFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,7 +36,6 @@ namespace SWAG
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseMvc();
         }
     }
